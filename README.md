@@ -23,6 +23,8 @@ When you run the command, it will ask for your github credentials (to get the li
 ? 2FA 123456
 ```
 
+(ps. if you get a 2FA that starts with one or more zeros, this won't work. Wait until the next one)
+
 It now gets the list of repositories and stores them in two files in the target folder.
 
 1. `repo-data.json` all information and meta data for each repo
