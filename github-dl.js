@@ -40,8 +40,26 @@ async function askUserPass() {
     ])
 }
 
+async function getUserType(octokit, identifier) {
+    // identifier can use user or org, let's figure out
+    let usr = await octokit.users.getByUsername({username: identifier})
+    return usr.data.type
+}
+
+async function getAllRepos(octokit, identifier) {
+    let userType = await getUserType(octokit, identifier)
+    switch(userType) {
+        case 'Organization':
+            return octokit.paginate('GET /orgs/:org/repos', {org: identifier, type: 'all'})
+        case 'User':
+            return octokit.paginate('GET /users/:username/repos', {username: identifier, type: 'all'})
+        default:
+            throw new Error(`Unknown user type: '${userType}'`)
+    }
+}
+
 async function doDL(usr, destination, extension) {
-    console.log('usr', usr)
+    console.log(`Getting list of all repositories for '${usr}'`)
     let answers = await askUserPass()
     
     let octokit = new Octokit({
@@ -56,18 +74,28 @@ async function doDL(usr, destination, extension) {
     })
 
     try {
-        // let repodata = await octokit.repos.listForUser({username: usr})
-        // let options = octokit.repos.listForUser.endpoint.merge({ username: usr})
-        let repodata = await octokit.paginate('GET /orgs/:org/repos', {org:usr,type:'all'})
-        console.log('rd',repodata)
+         let repodata = await getAllRepos(octokit, usr)
+        
         // make target dir
         await mkdirp(destination)
-        // write to target dir
-        let s = JSON.stringify(repodata)
-        fs.writeFileSync(path.join(destination, `${usr}-repo-data.json`), s, {encoding: 'utf8'})
-        let urls = repodata.map(r => `${r.ssh_url}`).join('\n')
-        fs.writeFileSync(path.join(destination, `${usr}-repo-urls.txt`), urls, {encoding: 'utf8'})
-        console.log(JSON.stringify(repodata,null,2))
+        
+        // write to target dir 
+        let dataFn = path.join(destination, `${usr}-repo-data.json`)
+        fs.writeFileSync(dataFn, JSON.stringify(repodata), {encoding: 'utf8'})
+        let urlsFn = path.join(destination, `${usr}-repo-urls.txt`)
+        let urls = repodata.map(r => `${r.ssh_url} ${r.name}${extension}`)
+        fs.writeFileSync(urlsFn, urls.join('\n'), {encoding: 'utf8'})
+        
+        console.log(`\nFound ${urls.length} repositories, wrote data to:
+
+- ${dataFn}
+- ${urlsFn}
+
+Run the following commands to clone all repos:
+    
+    cd ${destination}
+    cat ${urlsFn} | xargs -n2 -P8 git clone
+`)
     } catch (e) {
         console.error('Failed to login:', e.message)
         process.exit(-1)

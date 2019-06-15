@@ -30,6 +30,6 @@ It now gets the list of repositories and stores them in two files in the target 
 
 To download all the repos (assuming we ran with `-d repos`), run
 
-	cat repos/repo-urls.txt | xargs -n1 -P8 git clone
+	cat repos/repo-urls.txt | xargs -n2 -P8 git clone
 
 (this will run 8 processes in parallel, one git clone per line of the file)
