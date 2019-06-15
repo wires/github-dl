@@ -1,5 +1,8 @@
 let argv = require('minimist')(process.argv.slice(2))
 let R = require('ramda')
+let fs = require('fs')
+let path = require('path')
+let mkdirp = require('mkdirp')
 let Octokit = require('@octokit/rest')
 console.log(argv)
 
@@ -20,7 +23,9 @@ Options:
 `)
 }
 
-doDL(R.head(argv._), destination, extension)
+let usernameFromCli = R.head(argv._)
+console.log('un:', usernameFromCli)
+doDL(usernameFromCli, destination, extension)
 
 async function ask2FA() {
     return require('inquirer').prompt([
@@ -35,12 +40,8 @@ async function askUserPass() {
     ])
 }
 
-async function allRepos(user) {
-    let p = await octokit.repos.listForUser(user)
-    
-}
-
-async function doDL(user) {
+async function doDL(usr, destination, extension) {
+    console.log('usr', usr)
     let answers = await askUserPass()
     
     let octokit = new Octokit({
@@ -55,8 +56,18 @@ async function doDL(user) {
     })
 
     try {
-        let p = await octokit.activity.listPublicEvents()
-        console.log(JSON.stringify(p))
+        // let repodata = await octokit.repos.listForUser({username: usr})
+        // let options = octokit.repos.listForUser.endpoint.merge({ username: usr})
+        let repodata = await octokit.paginate('GET /orgs/:org/repos', {org:usr,type:'all'})
+        console.log('rd',repodata)
+        // make target dir
+        await mkdirp(destination)
+        // write to target dir
+        let s = JSON.stringify(repodata)
+        fs.writeFileSync(path.join(destination, `${usr}-repo-data.json`), s, {encoding: 'utf8'})
+        let urls = repodata.map(r => `${r.ssh_url}`).join('\n')
+        fs.writeFileSync(path.join(destination, `${usr}-repo-urls.txt`), urls, {encoding: 'utf8'})
+        console.log(JSON.stringify(repodata,null,2))
     } catch (e) {
         console.error('Failed to login:', e.message)
         process.exit(-1)
