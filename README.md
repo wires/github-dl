@@ -2,7 +2,7 @@
 
 #### Installation
 
-	npm install github-dl
+	npm install -g github-dl
 
 #### Usage
 
