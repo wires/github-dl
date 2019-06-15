@@ -1,10 +1,11 @@
+#! /usr/bin/env node
+
 let argv = require('minimist')(process.argv.slice(2))
 let R = require('ramda')
 let fs = require('fs')
 let path = require('path')
 let mkdirp = require('mkdirp')
 let Octokit = require('@octokit/rest')
-console.log(argv)
 
 let destination = argv.d || argv.destination || '.'
 let extension = (argv.dotGit || argv.G) ? '.git' : ''
@@ -21,10 +22,12 @@ Options:
     --destination, -d       destination folder, will be created if doesn't exist
     --dotGit, -G            store repos as 'name.git' instead of just 'name'
 `)
+    process.exit(0)
 }
 
+// todo support multiple?
 let usernameFromCli = R.head(argv._)
-console.log('un:', usernameFromCli)
+
 doDL(usernameFromCli, destination, extension)
 
 async function ask2FA() {

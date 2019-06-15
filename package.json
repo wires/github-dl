@@ -1,14 +1,16 @@
 {
   "name": "github-dl",
   "version": "1.0.0",
-  "description": "authenticate",
-  "main": "index.js",
+  "description": "Mass clone github repos",
+  "bin": {
+    "github-dl": "github-dl.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "jelle@defekt.nl",
+  "license": "MIT",
   "dependencies": {
     "@octokit/rest": "^16.28.1",
     "inquirer": "^6.3.1",
