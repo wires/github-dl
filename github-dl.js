@@ -97,7 +97,7 @@ async function doDL(usr, destination, extension) {
 Run the following commands to clone all repos:
     
     cd ${destination}
-    cat ${urlsFn} | xargs -n2 -P8 git clone
+    cat ${path.basename(urlsFn)} | xargs -n2 -P8 git clone
 `)
     } catch (e) {
         console.error('Failed to login:', e.message)

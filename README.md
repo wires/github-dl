@@ -4,6 +4,10 @@
 
 	npm install -g github-dl
 
+But! You do not have to install it, you can use it without installation:
+
+	npx github-dl username
+
 #### Usage
 
 Clone all repos (including private) from user `wires` into folder `repos`:
