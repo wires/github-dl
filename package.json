@@ -1,6 +1,6 @@
 {
   "name": "github-dl",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Mass clone github repos",
   "bin": {
     "github-dl": "github-dl.js"
