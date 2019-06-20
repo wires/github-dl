@@ -39,3 +39,15 @@ To download all the repos (assuming we ran with `-d repos`), run
 	cat repos/repo-urls.txt | xargs -n2 -P8 git clone
 
 (this will run 8 processes in parallel, one git clone per line of the file)
+
+
+### Related
+
+Some related/similar tools:
+
+- [gitall](https://www.npmjs.com/package/gitall)
+- [gitim](https://github.com/muhasturk/gitim)
+
+and this stackoverflow question has a ton of tools/approaches listed
+- https://stackoverflow.com/questions/19576742/how-to-clone-all-repos-at-once-from-github
+
